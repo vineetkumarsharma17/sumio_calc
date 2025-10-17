@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'app/routes/app_pages.dart';
+import 'package:sumio_calc/app/controllers/calculator_controller.dart';
+import 'package:sumio_calc/app/views/calculator_view.dart';
 
 void main() {
   runApp(SumioApp());
@@ -30,8 +31,8 @@ class SumioApp extends StatelessWidget {
         ),
       ),
       themeMode: ThemeMode.system,
-      initialRoute: Routes.calculator,
-      getPages: AppPages.pages,
+      home: CalculatorView(),
+      initialBinding: BindingsBuilder.put(() => CalculatorController()),
       debugShowCheckedModeBanner: false,
     );
   }
