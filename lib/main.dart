@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:sumio_calc/controllers/calculator_controller.dart';
+import 'package:sumio_calc/services/storage_service.dart';
 import 'package:sumio_calc/views/calculator/calculator_view.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await IsarService.init();
   runApp(SumioApp());
 }
 
