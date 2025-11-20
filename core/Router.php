@@ -66,12 +66,14 @@ class Router {
                 // Call handler
                 $handler = $route['handler'];
                 
+                // Normalize matches to positional parameters to avoid named-argument issues
+                $params = array_values($matches);
                 if (is_array($handler)) {
                     $controller = new $handler[0]();
                     $method = $handler[1];
-                    echo call_user_func_array([$controller, $method], $matches);
+                    echo call_user_func_array([$controller, $method], $params);
                 } else {
-                    echo call_user_func_array($handler, $matches);
+                    echo call_user_func_array($handler, $params);
                 }
                 
                 return;
