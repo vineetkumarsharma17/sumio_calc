@@ -13,35 +13,13 @@ class AuthMiddleware {
             // Check API key
             $apiKeyHeader = isset($headers['api_key']) ? $headers['api_key'] : (isset($headers['Api-Key']) ? $headers['Api-Key'] : null);
             if (!defined('API_KEY')) {
-                define('API_KEY', 'your-api-key-here'); // Set your API key in config/config.php
+                define('API_KEY', 'dSIUfnwn8RQAU87nBZRJfOiTdLEB84rE'); // Set your API key in config/config.php
             }
             if (!$apiKeyHeader || $apiKeyHeader !== API_KEY) {
                 Response::error('Invalid or missing API key', 401);
             }
 
-        // Get token from Authorization header
-        if (isset($headers['Authorization'])) {
-            $authHeader = $headers['Authorization'];
-            $arr = explode(" ", $authHeader);
-            if (count($arr) === 2 && $arr[0] === 'Bearer') {
-                $token = $arr[1];
-            }
-        }
-
-        if (!$token) {
-            Response::error('No token provided', 401);
-        }
-
-        try {
-            $decoded = $this->verifyToken($token);
-            
-            // Store user info in global variable for use in controllers
-            $GLOBALS['user_id'] = $decoded->user_id;
-            $GLOBALS['user_email'] = $decoded->email;
-            
-        } catch (Exception $e) {
-            Response::error('Invalid or expired token', 401);
-        }
+        // Ignore JWT token check for now
     }
 
     private function verifyToken($token) {
