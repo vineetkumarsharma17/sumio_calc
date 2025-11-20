@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import 'package:get/get.dart';
 import 'package:sumio_calc/controllers/excel_controller.dart';
+import 'package:sumio_calc/views/excel/excel_detail_page.dart';
 
 class HomeScreen extends GetView<ExcelController> {
   const HomeScreen({super.key});
@@ -71,7 +72,8 @@ class HomeScreen extends GetView<ExcelController> {
                     child: InkWell(
                       borderRadius: BorderRadius.circular(12),
                       onTap: () {
-                        // Navigate to file detail screen
+                        controller.selectedFileDetail = fileStat;
+                        // Get.to(() => const ExcelDetailPage());
                       },
                       child: Padding(
                         padding: const EdgeInsets.all(16),

@@ -1,9 +1,9 @@
 // import 'package:flutter/material.dart';
+// import 'package:get/get.dart';
+// import 'package:sumio_calc/controllers/excel_controller.dart';
 
-// class ExcelDetailPage extends StatelessWidget {
-//   final ExcelFileModel fileModel;
-
-//   const ExcelDetailPage({required this.fileModel, super.key});
+// class ExcelDetailPage extends GetView<ExcelController> {
+//   const ExcelDetailPage({super.key});
 
 //   @override
 //   Widget build(BuildContext context) {

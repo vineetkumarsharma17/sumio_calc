@@ -9,6 +9,7 @@ import '../services/storage_service.dart';
 class ExcelController extends GetxController {
   final StorageService storageService = StorageService();
   RxList<Map<String, dynamic>> fileStats = <Map<String, dynamic>>[].obs;
+  Map<String, dynamic>? selectedFileDetail;
 
   @override
   void onInit() {
