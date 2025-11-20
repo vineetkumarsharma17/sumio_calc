@@ -1,12 +1,10 @@
-import 'package:flutter/material.dart';
-import 'package:file_picker/file_picker.dart';
-import 'package:excel/excel.dart';
-import 'dart:convert';
 import 'dart:io';
 
-class ExcelViewerView extends StatelessWidget {
-  const ExcelViewerView({super.key});
+import 'package:excel/excel.dart';
+import 'package:file_picker/file_picker.dart';
+import 'package:get/get.dart';
 
+class ExcelController extends GetxController {
   Future<void> pickExcelFile() async {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -52,21 +50,5 @@ class ExcelViewerView extends StatelessWidget {
       "columns": columns,
       "data": rowsData,
     };
-
-    print("===== EXCEL JSON OUTPUT =====");
-    print(const JsonEncoder.withIndent("  ").convert(jsonMap));
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(title: const Text("Excel Viewer")),
-      body: Center(
-        child: ElevatedButton(
-          onPressed: pickExcelFile,
-          child: const Text("Pick Excel File"),
-        ),
-      ),
-    );
   }
 }

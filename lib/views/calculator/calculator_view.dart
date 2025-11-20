@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../controllers/calculator_controller.dart';
+import '../../controllers/calculator_controller.dart';
 
 class CalculatorView extends StatelessWidget {
   final CalculatorController controller = Get.put(CalculatorController());
