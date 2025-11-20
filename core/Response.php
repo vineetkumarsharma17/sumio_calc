@@ -23,6 +23,40 @@ class Response {
         ], JSON_PRETTY_PRINT);
         exit;
     }
+
+    /**
+     * Handle exception and PHP error as JSON response
+     */
+    public static function exception($exception) {
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Exception occurred',
+            'error' => [
+                'type' => get_class($exception),
+                'message' => $exception->getMessage(),
+                'file' => $exception->getFile(),
+                'line' => $exception->getLine()
+            ]
+        ], JSON_PRETTY_PRINT);
+        exit;
+    }
+
+    public static function phpError($errno, $errstr, $errfile, $errline) {
+        http_response_code(500);
+        echo json_encode([
+            'success' => false,
+            'message' => 'Server error',
+            'error' => [
+                'type' => 'Error',
+                'errno' => $errno,
+                'errstr' => $errstr,
+                'file' => $errfile,
+                'line' => $errline
+            ]
+        ], JSON_PRETTY_PRINT);
+        exit;
+    }
     
     public static function validationError($errors = []) {
         self::error('Validation failed', 422, $errors);

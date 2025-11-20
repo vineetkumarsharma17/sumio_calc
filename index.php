@@ -9,6 +9,39 @@ header('Content-Type: application/json');
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
+// Global error handler
+set_error_handler(function($errno, $errstr, $errfile, $errline) {
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Server error',
+        'error' => [
+            'type' => 'Error',
+            'errno' => $errno,
+            'errstr' => $errstr,
+            'file' => $errfile,
+            'line' => $errline
+        ]
+    ], JSON_PRETTY_PRINT);
+    exit;
+});
+
+// Global exception handler
+set_exception_handler(function($exception) {
+    http_response_code(500);
+    echo json_encode([
+        'success' => false,
+        'message' => 'Exception occurred',
+        'error' => [
+            'type' => get_class($exception),
+            'message' => $exception->getMessage(),
+            'file' => $exception->getFile(),
+            'line' => $exception->getLine()
+        ]
+    ], JSON_PRETTY_PRINT);
+    exit;
+});
+
 // Autoloader
 spl_autoload_register(function ($class) {
     $file = __DIR__ . '/' . str_replace('\\', '/', $class) . '.php';
