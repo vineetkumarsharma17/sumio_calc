@@ -1,8 +1,12 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:excel/excel.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+
+import '../models/data_model.dart';
 
 class ExcelController extends GetxController {
   Future<void> pickExcelFile() async {
@@ -22,7 +26,6 @@ class ExcelController extends GetxController {
 
     // First sheet
     final sheet = excel.tables[excel.tables.keys.first]!;
-    print("Rows: ${sheet.maxRows}, Cols: ${sheet.maxCols}");
 
     // Convert excel to JSON-friendly data
     List<String> columns = [];
@@ -44,11 +47,51 @@ class ExcelController extends GetxController {
       }
     }
 
-    // JSON structure
-    final jsonMap = {
-      "file_name": result.files.single.name,
-      "columns": columns,
-      "data": rowsData,
-    };
+    // Load column mappings from JSON asset file
+    final mappingsJson =
+        await rootBundle.loadString('lib/controllers/column_mappings.json');
+    final Map<String, dynamic> columnMappings = jsonDecode(mappingsJson);
+
+    // Helper to find actual column index for a required key
+    int? findColumnIndex(List<dynamic> possibleNames, List<String> columns) {
+      for (final name in possibleNames) {
+        final idx = columns.indexWhere((col) =>
+            col.trim().toLowerCase() == name.toString().trim().toLowerCase());
+        if (idx != -1) return idx;
+      }
+      return null;
+    }
+
+    // Convert rowsData to List<Map<String, dynamic>> and ignore empty rows
+    List<Map<String, dynamic>> jsonList = rowsData.where((row) {
+      // Ignore row if all cells are empty or whitespace
+      return row.any((cell) => cell.trim().isNotEmpty);
+    }).map((row) {
+      Map<String, dynamic> rowMap = {};
+      columnMappings.forEach((key, possibleNames) {
+        final idx = findColumnIndex(possibleNames, columns);
+        if (idx != null && idx < row.length) {
+          rowMap[key] = row[idx];
+        }
+      });
+      rowMap['file_name'] = result.files.single.name;
+      return rowMap;
+    }).toList();
+
+    // here print all data
+    print("Extracted Data: ${jsonList.length}");
+
+    for (var item in jsonList) {
+      print(item);
+    }
+
+    // Convert jsonList to List<DataModel>
+    List<DataModel> dataModels =
+        jsonList.map((item) => DataModel.fromJson(item)).toList();
+
+    print("Extracted DataModels: \\${dataModels.length}");
+    for (var model in dataModels) {
+      print(model.toJson());
+    }
   }
 }

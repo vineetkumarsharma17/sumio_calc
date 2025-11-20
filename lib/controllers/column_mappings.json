@@ -1,0 +1,62 @@
+{
+    "id": [
+        "id",
+        "ID",
+        "Id",
+        "Customer ID",
+        "customer id"
+    ],
+    "name": [
+        "name",
+        "Name",
+        "Names",
+        "nAme",
+        "customer name",
+        "Customer Name"
+    ],
+    "father": [
+        "father",
+        "Father",
+        "Father Name",
+        "father name"
+    ],
+    "address": [
+        "address",
+        "Village",
+        "Address",
+        "Customer Address",
+        "customer address"
+    ],
+    "aadhar": [
+        "aadhar",
+        "Aadhar",
+        "Aadhar No",
+        "aadhar no",
+        "Aadhaar",
+        "aadhaar"
+    ],
+    "amount": [
+        "amount",
+        "Amount",
+        "Loan Amount",
+        "loan amount"
+    ],
+    "bank": [
+        "bank",
+        "Bank",
+        "Bank Name",
+        "bank name"
+    ],
+    "received_amount": [
+        "received_amount",
+        "Received Amount",
+        "received amount",
+        "Amount Received",
+        "Mile"
+    ],
+    "file_name": [
+        "file_name",
+        "File Name",
+        "file name"
+    ]
+}
