@@ -20,6 +20,9 @@ $router->get('api/v1/sumio/files', [SumioController::class, 'getFilesWithRowCoun
 // Get data rows for a specific file (minimum 500 per page)
 $router->get('api/v1/sumio/files/{file_id}/data', [SumioController::class, 'getDataByFileId'], [new AuthMiddleware()]);
 
+// Update a single data row by id
+$router->put('api/v1/sumio/data/{id}', [SumioController::class, 'updateDataRow'], [new AuthMiddleware()]);
+
 // Protected routes (require authentication)
 $router->get('api/v1/auth/profile', [AuthController::class, 'profile'], [new AuthMiddleware()]);
 $router->post('api/v1/auth/logout', [AuthController::class, 'logout'], [new AuthMiddleware()]);

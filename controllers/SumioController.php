@@ -139,6 +139,70 @@ class SumioController extends Controller {
 	}
 
 	/**
+	 * Update a single data row in sumio_data by id
+	 * PUT /api/v1/sumio/data/{id}
+	 */
+	public function updateDataRow($id) {
+		$db = Database::getInstance()->getConnection();
+
+		$id = (int)$id;
+		if ($id <= 0) {
+			Response::validationError(['id' => 'Invalid id']);
+		}
+
+		$body = $this->getRequestBody();
+		if (empty($body) || !is_array($body)) {
+			Response::validationError(['body' => 'Request body must be a non-empty JSON object']);
+		}
+
+		// Disallow updating id and file_id
+		unset($body['id']);
+		unset($body['file_id']);
+
+		$columns = array_keys($body);
+		if (empty($columns)) {
+			Response::validationError(['body' => 'No updatable fields provided']);
+		}
+
+		// Build SET clause and types
+		$setParts = [];
+		$types = '';
+		$values = [];
+		foreach ($columns as $col) {
+			$setParts[] = "`" . $col . "` = ?";
+			$types .= 's';
+			$values[] = (string)$body[$col];
+		}
+		$setSql = implode(', ', $setParts);
+
+		$sql = "UPDATE sumio_data SET $setSql WHERE id = ?";
+		$stmt = $db->prepare($sql);
+		if (!$stmt) {
+			Response::serverError('Failed to prepare update statement');
+		}
+
+		// Bind params (types + id)
+		$types .= 'i';
+		$values[] = $id;
+		$stmt->bind_param($types, ...$values);
+		if (!$stmt->execute()) {
+			Response::serverError('Failed to execute update');
+		}
+		$affected = $stmt->affected_rows;
+		$stmt->close();
+
+		// Return updated row
+		$sel = $db->prepare("SELECT * FROM sumio_data WHERE id = ?");
+		if (!$sel) Response::serverError('Failed to prepare select statement');
+		$sel->bind_param('i', $id);
+		$sel->execute();
+		$res = $sel->get_result()->fetch_assoc();
+		$sel->close();
+
+		Response::success(['affected' => $affected, 'row' => $res], 'Row updated successfully');
+	}
+
+	/**
 	 * Get list of file names with count of rows
 	 * GET /api/v1/sumio/files
 	 */
