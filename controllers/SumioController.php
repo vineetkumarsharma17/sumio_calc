@@ -71,6 +71,74 @@ class SumioController extends Controller {
 	}
 
 	/**
+	 * Get data rows for a specific file id
+	 * GET /api/v1/sumio/files/{file_id}/data
+	 */
+	public function getDataByFileId($fileId) {
+		$db = Database::getInstance()->getConnection();
+
+		$fileId = (int)$fileId;
+		if ($fileId <= 0) {
+			Response::validationError(['file_id' => 'Invalid file_id']);
+		}
+
+		// Pagination params
+		$page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
+		$perPage = isset($_GET['per_page']) ? (int)$_GET['per_page'] : 500; // default 500
+		if ($page < 1) $page = 1;
+		// enforce minimum per_page of 500
+		$minPerPage = 500;
+		if ($perPage < $minPerPage) $perPage = $minPerPage;
+		$maxPerPage = 5000;
+		if ($perPage > $maxPerPage) $perPage = $maxPerPage;
+		$offset = ($page - 1) * $perPage;
+
+		// Get total rows for this file
+		$countSql = "SELECT COUNT(*) AS total FROM sumio_data WHERE file_id = ?";
+		$countStmt = $db->prepare($countSql);
+		if (!$countStmt) {
+			Response::serverError('Failed to prepare count query for file data');
+		}
+		$countStmt->bind_param('i', $fileId);
+		if (!$countStmt->execute()) {
+			Response::serverError('Failed to execute count query for file data');
+		}
+		$countRes = $countStmt->get_result()->fetch_assoc();
+		$total = (int)$countRes['total'];
+		$countStmt->close();
+
+		// Fetch rows for this file
+		$sql = "SELECT * FROM sumio_data WHERE file_id = ? ORDER BY id ASC LIMIT ? OFFSET ?";
+		$stmt = $db->prepare($sql);
+		if (!$stmt) {
+			Response::serverError('Failed to prepare query for file data');
+		}
+		$stmt->bind_param('iii', $fileId, $perPage, $offset);
+		if (!$stmt->execute()) {
+			Response::serverError('Failed to execute query for file data');
+		}
+		$result = $stmt->get_result();
+		$rows = [];
+		while ($r = $result->fetch_assoc()) {
+			$rows[] = $r;
+		}
+		$stmt->close();
+
+		$totalPages = $perPage > 0 ? (int)ceil($total / $perPage) : 0;
+
+		Response::success([
+			'file_id' => $fileId,
+			'data' => $rows,
+			'pagination' => [
+				'total' => $total,
+				'per_page' => $perPage,
+				'page' => $page,
+				'total_pages' => $totalPages
+			]
+		]);
+	}
+
+	/**
 	 * Get list of file names with count of rows
 	 * GET /api/v1/sumio/files
 	 */
