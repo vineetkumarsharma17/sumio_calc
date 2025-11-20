@@ -117,7 +117,7 @@ class SumioController extends Controller {
 			$files[] = [
 				'file_id' => (int)$row['file_id'],
 				'file_name' => $row['file_name'],
-				'created_at' => $row['created_at'],
+				'createdAt' => $row['createdAt'],
 				'row_count' => (int)$row['row_count']
 			];
 		}
