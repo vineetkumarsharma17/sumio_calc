@@ -102,7 +102,7 @@ class SumioController extends Controller {
 		$countStmt->close();
 
 		// Query to get file names, created_at and count of rows from sumio_data with limit/offset
-		$sql = "SELECT f.id AS file_id, f.file_name, f.created_at, COUNT(d.id) AS row_count FROM sumio_files f LEFT JOIN sumio_data d ON f.id = d.file_id GROUP BY f.id, f.file_name, f.created_at ORDER BY f.created_at DESC LIMIT ? OFFSET ?";
+		$sql = "SELECT f.id AS file_id, f.file_name, f.createdAt, COUNT(d.id) AS row_count FROM sumio_files f LEFT JOIN sumio_data d ON f.id = d.file_id GROUP BY f.id, f.file_name, f.createdAt ORDER BY f.createdAt DESC LIMIT ? OFFSET ?";
 		$stmt = $db->prepare($sql);
 		if (!$stmt) {
 			Response::serverError('Failed to prepare query for files');
