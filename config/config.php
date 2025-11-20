@@ -4,6 +4,7 @@
  */
 
 define('JWT_SECRET', 'your-secret-key-here-change-in-production');
+define('API_KEY', 'dSIUfnwn8RQAU87nBZRJfOiTdLEB84rE'); // Change this to your actual API key
 define('JWT_EXPIRY', 86400); // 24 hours
 
 define('API_VERSION', 'v1');

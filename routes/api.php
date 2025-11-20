@@ -12,7 +12,7 @@ $router->post('api/v1/auth/login', [AuthController::class, 'login']);
 
 // SumioController: Upload JSON data
 require_once 'controllers/SumioController.php';
-$router->post('api/v1/sumio/upload-json', [SumioController::class, 'uploadJsonData']);
+$router->post('api/v1/sumio/upload-json', [SumioController::class, 'uploadJsonData'], [new AuthMiddleware()]);
 
 // Protected routes (require authentication)
 $router->get('api/v1/auth/profile', [AuthController::class, 'profile'], [new AuthMiddleware()]);
