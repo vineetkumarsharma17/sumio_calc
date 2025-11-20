@@ -1,4 +1,6 @@
 import 'package:get/get.dart';
+import 'package:sumio_calc/app/routs/routs.dart';
+import 'package:sumio_calc/app/views/excelViewer.dart';
 
 class CalculatorController extends GetxController {
   RxString expression = ''.obs;
@@ -28,9 +30,15 @@ class CalculatorController extends GetxController {
     }
   }
 
+  // void checkSecretCode() {
+  //   if (expression.value == '1122') {
+  //     Get.toNamed(Routes.excelViewer);
+  //   }
+  // }
   void checkSecretCode() {
     if (expression.value == '1122') {
-      Get.toNamed('/excelViewer');
+      //Get.toNamed('/excelViewer');
+      Get.to(() => ExcelViewerView());
     }
   }
 
