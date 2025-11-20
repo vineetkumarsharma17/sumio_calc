@@ -6,10 +6,39 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
-import '../models/data_model.dart';
+import '../services/storage_service.dart';
 
 class ExcelController extends GetxController {
+  final StorageService storageService = StorageService();
+  RxList<Map<String, dynamic>> fileStats = <Map<String, dynamic>>[].obs;
+
+  @override
+  void onInit() {
+    super.onInit();
+    loadFileStats();
+  }
+
+  Future<void> loadFileStats() async {
+    await storageService.init();
+    final rows = await storageService.getRows();
+    final Map<String, Map<String, dynamic>> fileData = {};
+    for (var row in rows) {
+      final fileName = row['file_name'] ?? '';
+      if (!fileData.containsKey(fileName)) {
+        fileData[fileName] = {
+          'file_name': fileName,
+          'count': 0,
+          'created_at': row['updated_at'],
+        };
+      }
+      fileData[fileName]!['count'] = (fileData[fileName]!['count'] as int) + 1;
+    }
+    fileStats.value = fileData.values.toList();
+    print(fileStats);
+  }
+
   Future<void> pickExcelFile() async {
+    await storageService.init();
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
       allowedExtensions: ['xlsx', 'xls'],
@@ -47,51 +76,27 @@ class ExcelController extends GetxController {
       }
     }
 
-    // Load column mappings from JSON asset file
-    final mappingsJson =
-        await rootBundle.loadString('lib/controllers/column_mappings.json');
-    final Map<String, dynamic> columnMappings = jsonDecode(mappingsJson);
-
-    // Helper to find actual column index for a required key
-    int? findColumnIndex(List<dynamic> possibleNames, List<String> columns) {
-      for (final name in possibleNames) {
-        final idx = columns.indexWhere((col) =>
-            col.trim().toLowerCase() == name.toString().trim().toLowerCase());
-        if (idx != -1) return idx;
-      }
-      return null;
-    }
-
     // Convert rowsData to List<Map<String, dynamic>> and ignore empty rows
     List<Map<String, dynamic>> jsonList = rowsData.where((row) {
       // Ignore row if all cells are empty or whitespace
       return row.any((cell) => cell.trim().isNotEmpty);
     }).map((row) {
       Map<String, dynamic> rowMap = {};
-      columnMappings.forEach((key, possibleNames) {
-        final idx = findColumnIndex(possibleNames, columns);
-        if (idx != null && idx < row.length) {
-          rowMap[key] = row[idx];
-        }
-      });
+      for (int i = 0; i < columns.length; i++) {
+        rowMap[columns[i]] = row[i];
+      }
       rowMap['file_name'] = result.files.single.name;
       return rowMap;
     }).toList();
 
-    // here print all data
-    print("Extracted Data: ${jsonList.length}");
-
+    // Store each row in DB as JSON
     for (var item in jsonList) {
-      print(item);
+      await storageService.insertRow(result.files.single.name, item);
     }
 
-    // Convert jsonList to List<DataModel>
-    List<DataModel> dataModels =
-        jsonList.map((item) => DataModel.fromJson(item)).toList();
+    print("Imported and saved ${jsonList.length} rows to DB");
 
-    print("Extracted DataModels: \\${dataModels.length}");
-    for (var model in dataModels) {
-      print(model.toJson());
-    }
+    // Reload file stats after import
+    await loadFileStats();
   }
 }
