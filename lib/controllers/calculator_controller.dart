@@ -1,5 +1,6 @@
 import 'package:get/get.dart';
-import 'package:sumio_calc/app/excelViewer/view/home_page.dart';
+import 'package:sumio_calc/controllers/excel_controller.dart';
+import 'package:sumio_calc/views/excel/home.dart';
 
 class CalculatorController extends GetxController {
   RxString expression = ''.obs;
@@ -29,15 +30,10 @@ class CalculatorController extends GetxController {
     }
   }
 
-  // void checkSecretCode() {
-  //   if (expression.value == '1122') {
-  //     Get.toNamed(Routes.excelViewer);
-  //   }
-  // }
   void checkSecretCode() {
     if (expression.value == '1122') {
-      //Get.toNamed('/excelViewer');
-      Get.to(() => HomePage());
+      Get.to(() => const HomeScreen(),
+          binding: BindingsBuilder.put(() => ExcelController()));
     }
   }
 
